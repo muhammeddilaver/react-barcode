@@ -1,23 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import BarcodeScanner from './components/BarcodeScanner';
 
 function App() {
+  const [barcode, setBarcode] = useState(null);
+
+  const handleBarcodeDetected = (barcode) => {
+    setBarcode(barcode);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Barcode Scanner</h1>
+      <BarcodeScanner onDetected={handleBarcodeDetected} />
+      {barcode && <p>Detected Barcode: {barcode}</p>}
     </div>
   );
 }
