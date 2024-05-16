@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import BarcodeScanner from './components/BarcodeScanner';
 
-function App() {
+const App = () => {
   const [barcode, setBarcode] = useState(null);
 
   const handleBarcodeDetected = (barcode) => {
     setBarcode(barcode);
   };
+
   return (
     <div>
       <h1>Barcode Scanner</h1>
@@ -14,6 +15,6 @@ function App() {
       {barcode && <p>Detected Barcode: {barcode}</p>}
     </div>
   );
-}
+};
 
 export default App;

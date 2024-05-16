@@ -1,43 +1,58 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Quagga from 'quagga';
 
 const BarcodeScanner = ({ onDetected }) => {
-    const videoRef = useRef();
+  const [isScanning, setIsScanning] = useState(false);
+  const videoRef = useRef();
 
-    useEffect(() => {
-        Quagga.init({
-            inputStream: {
-                name: 'Live',
-                type: 'LiveStream',
-                target: videoRef.current,
-                constraints: {
-                    width: 480,
-                    height: 320,
-                    facingMode: 'environment', // Kamera modunu belirleyebilirsiniz
-                },
-            },
-            decoder: {
-                readers: ['ean_reader'], // Okunacak barkod türünü belirleyebilirsiniz
-            },
-        }, (err) => {
-            if (err) {
-                console.error('Error initializing Quagga:', err);
-                return;
-            }
-            Quagga.start();
-        });
+  const startScanner = () => {
+    setIsScanning(true);
+    Quagga.init({
+      inputStream: {
+        name: 'Live',
+        type: 'LiveStream',
+        target: videoRef.current,
+        constraints: {
+          width: 480,
+          height: 320,
+          facingMode: 'environment', // Kamera modunu belirleyebilirsiniz
+        },
+      },
+      decoder: {
+        readers: ['ean_reader'], // Okunacak barkod türünü belirleyebilirsiniz
+      },
+    }, (err) => {
+      if (err) {
+        console.error('Error initializing Quagga:', err);
+        return;
+      }
+      Quagga.start();
+    });
 
-        Quagga.onDetected((data) => {
-            onDetected(data.codeResult.code);
-            Quagga.stop();
-        });
+    Quagga.onDetected((data) => {
+      onDetected(data.codeResult.code);
+      setIsScanning(false);
+      Quagga.stop();
+    });
+  };
 
-        return () => {
-            Quagga.stop();
-        };
-    }, [onDetected]);
+  const stopScanner = () => {
+    setIsScanning(false);
+    Quagga.stop();
+  };
 
-    return <video ref={videoRef} />;
+  return (
+    <div>
+      {isScanning ? (
+        <div>
+          <video ref={videoRef} />
+          <button onClick={stopScanner}>Stop Scanning</button>
+        </div>
+      ) : (
+        <button onClick={startScanner}>Start Scanning</button>
+      )}
+    </div>
+  );
 };
 
 export default BarcodeScanner;
