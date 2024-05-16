@@ -1,26 +1,42 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Quagga from 'quagga';
 
-const BarcodeScanner = ({ onDetected }) => {
-  const [isScanning, setIsScanning] = useState(false);
+const BarcodeScanner = () => {
   const videoRef = useRef();
 
-  const startScanner = () => {
-    setIsScanning(true);
+  useEffect(() => {
+    const initCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      } catch (err) {
+        console.error('Error accessing the camera:', err);
+      }
+    };
+
+    initCamera();
+
     Quagga.init({
       inputStream: {
         name: 'Live',
         type: 'LiveStream',
         target: videoRef.current,
         constraints: {
-          width: 480,
-          height: 320,
-          facingMode: 'environment', // Kamera modunu belirleyebilirsiniz
+          width: 640,
+          height: 480,
+          facingMode: 'environment', // or 'user' for front camera
         },
       },
-      decoder: {
-        readers: ['ean_reader'], // Okunacak barkod türünü belirleyebilirsiniz
+      locator: {
+        patchSize: 'medium',
+        halfSample: true,
       },
+      decoder: {
+        readers: ['ean_reader', 'upc_reader', 'code_128_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'qr_reader', 'code_93_reader'],
+      },
+      numOfWorkers: navigator.hardwareConcurrency || 4,
+      locate: true,
     }, (err) => {
       if (err) {
         console.error('Error initializing Quagga:', err);
@@ -29,28 +45,14 @@ const BarcodeScanner = ({ onDetected }) => {
       Quagga.start();
     });
 
-    Quagga.onDetected((data) => {
-      onDetected(data.codeResult.code);
-      setIsScanning(false);
+    return () => {
       Quagga.stop();
-    });
-  };
-
-  const stopScanner = () => {
-    setIsScanning(false);
-    Quagga.stop();
-  };
+    };
+  }, []);
 
   return (
     <div>
-      {isScanning ? (
-        <div>
-          <video ref={videoRef} />
-          <button onClick={stopScanner}>Stop Scanning</button>
-        </div>
-      ) : (
-        <button onClick={startScanner}>Start Scanning</button>
-      )}
+      <video ref={videoRef} width="100%" height="auto" playsInline />
     </div>
   );
 };
