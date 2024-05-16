@@ -3,6 +3,7 @@ import Quagga from 'quagga';
 
 const BarcodeScanner = () => {
   const videoRef = useRef();
+  const resultRef = useRef();
 
   useEffect(() => {
     const initCamera = async () => {
@@ -42,6 +43,7 @@ const BarcodeScanner = () => {
         console.error('Error initializing Quagga:', err);
         return;
       }
+      Quagga.onDetected(handleBarcodeDetection);
       Quagga.start();
     });
 
@@ -50,9 +52,16 @@ const BarcodeScanner = () => {
     };
   }, []);
 
+  const handleBarcodeDetection = (result) => {
+    if (result.codeResult) {
+      resultRef.current.innerHTML = `Detected barcode: ${result.codeResult.code}`;
+    }
+  };
+
   return (
     <div>
       <video ref={videoRef} width="100%" height="auto" playsInline />
+      <div ref={resultRef}></div>
     </div>
   );
 };
