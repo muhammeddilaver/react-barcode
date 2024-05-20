@@ -1,67 +1,47 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Quagga from 'quagga';
 
 const BarcodeScanner = () => {
-  const videoRef = useRef();
-  const resultRef = useRef();
+  const [scannedCode, setScannedCode] = useState(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
-    const initCamera = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      } catch (err) {
-        console.error('Error accessing the camera:', err);
-      }
-    };
-
-    initCamera();
-
     Quagga.init({
       inputStream: {
-        name: 'Live',
         type: 'LiveStream',
-        target: videoRef.current,
+        target: videoRef.current, // Or '#yourElement' (optional)
         constraints: {
           width: 640,
           height: 480,
-          facingMode: 'environment', // or 'user' for front camera
+          facingMode: 'environment' // or user for the front camera
         },
       },
-      locator: {
-        patchSize: 'medium',
-        halfSample: true,
-      },
       decoder: {
-        readers: ['ean_reader', 'upc_reader', 'code_128_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'qr_reader', 'code_93_reader'],
+        readers: ['code_128_reader', 'ean_reader', 'ean_8_reader', 'code_39_reader', 'code_39_vin_reader', 'upc_reader', 'upc_e_reader', 'i2of5_reader'],
       },
-      numOfWorkers: navigator.hardwareConcurrency || 4,
-      locate: true,
     }, (err) => {
       if (err) {
-        console.error('Error initializing Quagga:', err);
+        console.error(err);
         return;
       }
-      Quagga.onDetected(handleBarcodeDetection);
       Quagga.start();
     });
 
+    Quagga.onDetected((data) => {
+      setScannedCode(data.codeResult.code);
+      Quagga.stop();
+    });
+
     return () => {
+      Quagga.offDetected();
       Quagga.stop();
     };
   }, []);
 
-  const handleBarcodeDetection = (result) => {
-    if (result.codeResult) {
-      resultRef.current.innerHTML = `Detected barcode: ${result.codeResult.code}`;
-    }
-  };
-
   return (
     <div>
-      <video ref={videoRef} width="100%" height="auto" playsInline />
-      <div ref={resultRef}></div>
+      <div ref={videoRef} style={{ width: '100%', height: 'auto' }}></div>
+      {scannedCode && <div>Scanned Code: {scannedCode}</div>}
     </div>
   );
 };

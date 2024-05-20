@@ -1,14 +1,16 @@
 import React from 'react';
+import './App.css';
 import BarcodeScanner from './components/BarcodeScanner';
 
-const App = () => {
-
+function App() {
   return (
     <div className="App">
-      <h1>Barcode Scanner</h1>
-      <BarcodeScanner />
+      <header className="App-header">
+        <h1>Barcode Scanner</h1>
+        <BarcodeScanner />
+      </header>
     </div>
   );
-};
+}
 
 export default App;
