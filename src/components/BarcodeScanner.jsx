@@ -34,7 +34,7 @@ const BarcodeScanner = () => {
         showFrequency: true,
         drawScanline: true,
         showPattern: true
-      }{}
+      }
     }, (err) => {
     if (err) {
       console.error(err);
