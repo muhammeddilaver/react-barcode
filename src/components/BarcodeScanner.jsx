@@ -56,8 +56,8 @@ const BarcodeScanner = () => {
 
   return (
     <div>
-      <div ref={videoRef} style={{ width: '100%', height: 'auto' }}></div>
       {scannedCode && <div>Scanned Code: {scannedCode}</div>}
+      <div ref={videoRef} style={{ width: '100%', height: 'auto' }}></div>
     </div>
   );
 };
