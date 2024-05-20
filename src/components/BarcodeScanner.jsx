@@ -20,6 +20,8 @@ const BarcodeScanner = () => {
         readers: [
           'code_39_reader',
           'code_128_reader', 
+          'ean_reader', 
+          'ean_8_reader', 
         ],
       },
     }, (err) => {
