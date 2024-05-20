@@ -16,6 +16,10 @@ const BarcodeScanner = () => {
           facingMode: 'environment' // or user for the front camera
         },
       },
+      locator: {
+        patchSize: 'medium', // x-small, small, medium, large, x-large
+        halfSample: true,
+      },
       decoder: {
         readers: [
           'code_39_reader',
@@ -24,6 +28,13 @@ const BarcodeScanner = () => {
           'ean_8_reader', 
         ],
       },
+      locate: true,
+      debug: {
+        drawBoundingBox: true,
+        showFrequency: true,
+        drawScanline: true,
+        showPattern: true
+      }
     }, (err) => {
       if (err) {
         console.error(err);
@@ -34,12 +45,12 @@ const BarcodeScanner = () => {
 
     Quagga.onDetected((data) => {
       setScannedCode(data.codeResult.code);
-      Quagga.stop();
+      //Quagga.stop();
     });
 
     return () => {
       Quagga.offDetected();
-      Quagga.stop();
+      //Quagga.stop();
     };
   }, []);
 
