@@ -44,7 +44,7 @@ const BarcodeScanner = () => {
   });
 
   Quagga.onDetected((data) => {
-    if (data.codeResult.code.toString().length() === 13) {
+    if (data.codeResult.code.toString().length === 13) {
       setScannedCode(data.codeResult.code);
     }
     //Quagga.stop();
