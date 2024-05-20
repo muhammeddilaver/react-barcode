@@ -18,6 +18,7 @@ const BarcodeScanner = () => {
       },
       decoder: {
         readers: [
+          'code_39_reader',
           'code_128_reader', 
         ],
       },
