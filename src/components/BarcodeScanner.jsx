@@ -76,7 +76,9 @@ const BarcodeScanner = () => {
 
       // Adjust the accuracy threshold as needed
       if (accuracy < 0.15) {
-        setScannedCode(code);
+        if (code.toString().length === 13) {
+          setScannedCode(code);
+        }
         //Quagga.stop();
       }
       //Quagga.stop();
